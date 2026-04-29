@@ -1,4 +1,4 @@
-import vercel from '@astrojs/vercel/serverless';
+import vercel from '@astrojs/vercel';
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import AstroPWA from '@vite-pwa/astro';
