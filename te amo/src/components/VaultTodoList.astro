@@ -1,0 +1,178 @@
+---
+---
+<div class="bg-white/60 backdrop-blur-[10px] rounded-organic p-6 shadow-sm border border-white/40 flex flex-col relative overflow-hidden transition-all duration-500" id="todo-container">
+  
+  <div id="todo-active-view" class="flex flex-col">
+    <h2 class="text-xl font-semibold text-gray-800 mb-1">Prioridades de Hoy</h2>
+    <p class="text-gray-500 text-sm mb-5">Concéntrate en lo importante (máximo 3).</p>
+    
+    <div id="todo-list" class="flex flex-col gap-3 mb-4 empty:hidden">
+      <!-- Tasks injected here by JS -->
+    </div>
+
+    <form id="todo-form" class="relative">
+      <input 
+        type="text" 
+        id="todo-input" 
+        placeholder="Añadir tarea..." 
+        autocomplete="off"
+        class="w-full bg-white/50 border border-white/80 rounded-[1.5rem] px-5 py-4 pr-14 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-300 focus:bg-white/80 shadow-inner transition-all duration-300"
+      />
+      <button type="submit" id="todo-submit" class="absolute right-2 top-2 p-2 bg-gray-800 text-white rounded-full shadow-md hover:bg-gray-700 active:scale-95 transition-all disabled:opacity-50 disabled:active:scale-100 flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+        </svg>
+      </button>
+    </form>
+    <p id="todo-limit-msg" class="text-xs text-rose-500 mt-3 text-center hidden font-medium">Has alcanzado tu límite de 3 prioridades por hoy.</p>
+  </div>
+
+  <div id="todo-vault-view" class="hidden flex-col items-center text-center py-6">
+    <div class="w-16 h-16 rounded-full bg-indigo-100/80 mb-5 flex items-center justify-center text-indigo-400 shadow-inner">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+      </svg>
+    </div>
+    <h2 class="text-xl font-semibold text-gray-800 mb-3">Bóveda del Mañana</h2>
+    <p class="text-gray-600 text-sm leading-relaxed px-2">
+      Ya es tarde para preocupaciones. He guardado tus ideas en la Bóveda del Mañana. Ahora toca descansar.
+    </p>
+  </div>
+</div>
+
+<script>
+  const MAX_TASKS = 3;
+  const STORAGE_KEY = 'vault_todo_tasks';
+  
+  const activeView = document.getElementById('todo-active-view');
+  const vaultView = document.getElementById('todo-vault-view');
+  const form = document.getElementById('todo-form');
+  const input = document.getElementById('todo-input');
+  const list = document.getElementById('todo-list');
+  const submitBtn = document.getElementById('todo-submit');
+  const limitMsg = document.getElementById('todo-limit-msg');
+
+  // Load tasks from local storage
+  let tasks = [];
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) tasks = JSON.parse(saved);
+  } catch(e) {
+    console.error('Error parsing tasks');
+  }
+
+  function saveTasks() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+  }
+
+  function renderTasks() {
+    if(!list) return;
+    list.innerHTML = '';
+    
+    tasks.forEach((task, index) => {
+      const el = document.createElement('div');
+      el.className = 'group flex items-center justify-between bg-white/50 p-3 pl-4 rounded-2xl border border-white/60 shadow-sm hover:shadow-md hover:bg-white/70 transition-all duration-300';
+      
+      const leftCol = document.createElement('div');
+      leftCol.className = 'flex items-center gap-3 overflow-hidden flex-1';
+      
+      const checkbox = document.createElement('button');
+      checkbox.className = `w-6 h-6 rounded-full flex-shrink-0 border-2 transition-all duration-300 flex items-center justify-center ${task.done ? 'bg-emerald-400 border-emerald-400' : 'border-gray-300 bg-transparent hover:border-emerald-300'}`;
+      checkbox.innerHTML = task.done ? `<svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>` : '';
+      
+      checkbox.onclick = () => {
+        const wasDone = tasks[index].done;
+        tasks[index].done = !wasDone;
+        
+        if (!wasDone) {
+          try {
+            const victories = JSON.parse(localStorage.getItem('victories_history') || '[]');
+            victories.push({ text: tasks[index].text, date: new Date().toISOString() });
+            localStorage.setItem('victories_history', JSON.stringify(victories));
+            window.dispatchEvent(new Event('victory-added'));
+          } catch(e) {}
+        }
+        
+        saveTasks();
+        renderTasks();
+      };
+      
+      const text = document.createElement('span');
+      text.className = `text-gray-700 text-[15px] truncate transition-all duration-300 ${task.done ? 'line-through text-gray-400 opacity-60' : ''}`;
+      text.textContent = task.text;
+      
+      leftCol.appendChild(checkbox);
+      leftCol.appendChild(text);
+      
+      const deleteBtn = document.createElement('button');
+      deleteBtn.className = 'text-gray-300 hover:text-rose-400 p-2 opacity-0 group-hover:opacity-100 transition-all duration-300 flex-shrink-0';
+      deleteBtn.innerHTML = `<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>`;
+      deleteBtn.onclick = () => {
+        tasks.splice(index, 1);
+        saveTasks();
+        renderTasks();
+      };
+      
+      el.appendChild(leftCol);
+      el.appendChild(deleteBtn);
+      
+      list.appendChild(el);
+    });
+
+    updateInputState();
+  }
+
+  function updateInputState() {
+    if(!input || !submitBtn || !limitMsg) return;
+    if (tasks.length >= MAX_TASKS) {
+      input.disabled = true;
+      submitBtn.disabled = true;
+      limitMsg.classList.remove('hidden');
+      input.placeholder = "Límite de prioridades alcanzado.";
+    } else {
+      input.disabled = false;
+      submitBtn.disabled = false;
+      limitMsg.classList.add('hidden');
+      input.placeholder = "Añadir prioridad...";
+    }
+  }
+
+  if (form && input) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const val = input.value.trim();
+      if (val && tasks.length < MAX_TASKS) {
+        tasks.push({ text: val, done: false });
+        input.value = '';
+        saveTasks();
+        renderTasks();
+      }
+    });
+  }
+
+  // Lógica de la Bóveda del Mañana
+  function checkVaultState() {
+    const hour = new Date().getHours();
+    // Se bloquea de 20:00 hasta las 05:59 del siguiente día
+    if (hour >= 20 || hour < 6) {
+      if(activeView) activeView.classList.add('hidden');
+      if(vaultView) {
+        vaultView.classList.remove('hidden');
+        vaultView.classList.add('flex');
+      }
+    } else {
+      if(activeView) activeView.classList.remove('hidden');
+      if(vaultView) {
+        vaultView.classList.add('hidden');
+        vaultView.classList.remove('flex');
+      }
+      renderTasks();
+    }
+  }
+
+  // Inicializar
+  checkVaultState();
+  
+  // Actualizar el estado si se deja la pestaña abierta y cruza el límite de hora
+  setInterval(checkVaultState, 60000); 
+</script>

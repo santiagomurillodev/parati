@@ -1,0 +1,119 @@
+---
+---
+<!-- Botón Flotante de Pánico -->
+<button id="panic-btn-trigger" class="fixed bottom-8 right-6 w-16 h-16 bg-rose-500 text-white rounded-full shadow-xl shadow-rose-500/40 flex items-center justify-center z-40 active:scale-95 transition-transform hover:bg-rose-600">
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+  </svg>
+</button>
+
+<!-- Modal -->
+<div id="panic-modal" class="fixed inset-0 z-50 flex items-center justify-center p-6 opacity-0 pointer-events-none transition-opacity duration-300">
+  <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-md" id="panic-backdrop"></div>
+  
+  <div class="bg-white/95 backdrop-blur-xl rounded-[2.5rem] w-full max-w-sm p-8 relative shadow-2xl transform scale-95 transition-transform duration-300" id="panic-content">
+    <button id="close-panic" class="absolute top-5 right-5 text-gray-400 hover:text-gray-700 bg-gray-100 rounded-full p-2 transition-colors">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+    
+    <div class="text-center mb-8 mt-2">
+      <h2 class="text-2xl font-semibold text-gray-800 mb-1">Anclaje 5-4-3-2-1</h2>
+      <p class="text-gray-500 text-sm">Vuelve al presente, paso a paso.</p>
+    </div>
+    
+    <div class="min-h-[160px] flex flex-col items-center justify-center text-center mb-8">
+      <div id="panic-number" class="text-7xl font-bold text-blue-400 mb-6 drop-shadow-sm transition-colors duration-500">5</div>
+      <p id="panic-instruction" class="text-lg text-gray-700 font-medium leading-relaxed transition-opacity duration-300">
+        Cosas que puedes ver.
+      </p>
+    </div>
+    
+    <button id="next-panic-step" class="w-full py-4 bg-gray-800 text-white rounded-[1.5rem] font-medium shadow-lg shadow-gray-800/20 active:scale-[0.98] transition-transform flex items-center justify-center gap-2">
+      <span id="next-panic-text">Siguiente</span>
+      <svg id="next-panic-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+      </svg>
+    </button>
+  </div>
+</div>
+
+<script>
+  const steps = [
+    { num: "5", text: "Encuentra 5 cosas que puedas ver a tu alrededor. Nómbralas.", color: "text-blue-400" },
+    { num: "4", text: "Encuentra 4 cosas que puedas tocar o sentir (la silla, tu ropa).", color: "text-emerald-400" },
+    { num: "3", text: "Encuentra 3 cosas que puedas escuchar ahora mismo.", color: "text-amber-400" },
+    { num: "2", text: "Encuentra 2 cosas que puedas oler.", color: "text-orange-400" },
+    { num: "1", text: "Encuentra 1 cosa que puedas saborear.", color: "text-rose-400" },
+    { num: "✓", text: "Respira profundamente. Estás aquí, estás a salvo.", color: "text-teal-500" }
+  ];
+
+  let currentStep = 0;
+
+  const modal = document.getElementById('panic-modal');
+  const content = document.getElementById('panic-content');
+  const backdrop = document.getElementById('panic-backdrop');
+  const btnOpen = document.getElementById('panic-btn-trigger');
+  const btnClose = document.getElementById('close-panic');
+  const btnNext = document.getElementById('next-panic-step');
+  
+  const numEl = document.getElementById('panic-number');
+  const textEl = document.getElementById('panic-instruction');
+  const btnNextText = document.getElementById('next-panic-text');
+  const btnNextIcon = document.getElementById('next-panic-icon');
+
+  function updateStep() {
+    if(!numEl || !textEl || !btnNextText || !btnNextIcon) return;
+    
+    // Fade out text temporarily
+    textEl.style.opacity = '0';
+    
+    setTimeout(() => {
+      const step = steps[currentStep];
+      numEl.textContent = step.num;
+      numEl.className = `text-7xl font-bold mb-6 drop-shadow-sm transition-colors duration-500 ${step.color}`;
+      textEl.textContent = step.text;
+      textEl.style.opacity = '1';
+      
+      if (currentStep === steps.length - 1) {
+        btnNextText.textContent = 'Terminar';
+        btnNextIcon.classList.add('hidden');
+      } else {
+        btnNextText.textContent = 'Siguiente';
+        btnNextIcon.classList.remove('hidden');
+      }
+    }, 200);
+  }
+
+  function openModal() {
+    if(!modal || !content) return;
+    currentStep = 0;
+    updateStep();
+    modal.classList.remove('opacity-0', 'pointer-events-none');
+    content.classList.remove('scale-95');
+    content.classList.add('scale-100');
+  }
+
+  function closeModal() {
+    if(!modal || !content) return;
+    modal.classList.add('opacity-0', 'pointer-events-none');
+    content.classList.remove('scale-100');
+    content.classList.add('scale-95');
+  }
+
+  if (btnOpen && btnClose && backdrop && btnNext) {
+    btnOpen.addEventListener('click', openModal);
+    btnClose.addEventListener('click', closeModal);
+    backdrop.addEventListener('click', closeModal);
+
+    btnNext.addEventListener('click', () => {
+      if (currentStep < steps.length - 1) {
+        currentStep++;
+        updateStep();
+      } else {
+        closeModal();
+      }
+    });
+  }
+</script>

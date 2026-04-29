@@ -1,0 +1,96 @@
+---
+// InstallPWA.astro
+---
+
+<!-- Banner de instalación PWA (Estilo iOS Minimalista) -->
+<div id="pwa-install-banner" class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-sm bg-white/80 backdrop-blur-xl p-4 rounded-3xl border border-white/60 shadow-lg z-50 flex items-center justify-between gap-4 transition-all duration-500 translate-y-32 opacity-0 pointer-events-none">
+  <div class="flex items-center gap-3">
+    <div class="w-11 h-11 bg-pink-50 rounded-2xl flex items-center justify-center shrink-0 border border-pink-100 shadow-inner">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-pink-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+      </svg>
+    </div>
+    <div class="flex flex-col">
+      <span class="text-[13px] font-bold text-gray-800 tracking-tight">Instalar Refugio Rosa</span>
+      <span class="text-[10px] text-gray-500 leading-tight">Añade a inicio para uso sin conexión.</span>
+    </div>
+  </div>
+  <button id="btn-pwa-install" class="bg-pink-400 text-white text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-pink-500 transition-transform active:scale-95 shadow-sm shrink-0">
+    Instalar
+  </button>
+</div>
+
+<script>
+  let deferredPrompt;
+  const installBanner = document.getElementById('pwa-install-banner');
+  const installButton = document.getElementById('btn-pwa-install');
+
+  // Detección de entorno
+  const isIos = () => {
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    return /iphone|ipad|ipod/.test(userAgent);
+  };
+  
+  // Detectar Safari en Mac (Escritorio)
+  const isMacSafari = () => {
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    return /macintosh/.test(userAgent) && /safari/.test(userAgent) && !/chrome|chromium|edg/.test(userAgent);
+  };
+  
+  // Detectar si ya se está ejecutando como app instalada (standalone)
+  const isStandalone = () => {
+    return ('standalone' in window.navigator) && (window.navigator as any).standalone || window.matchMedia('(display-mode: standalone)').matches;
+  };
+
+  function showBanner() {
+    if(installBanner) {
+      installBanner.classList.remove('translate-y-32', 'opacity-0', 'pointer-events-none');
+    }
+  }
+
+  function hideBanner() {
+    if(installBanner) {
+      installBanner.classList.add('translate-y-32', 'opacity-0', 'pointer-events-none');
+    }
+  }
+
+  // Interceptar el evento estándar de instalación (Android/Chrome/Edge)
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault(); // Evita que Chrome muestre el mini-infobar default
+    deferredPrompt = e;
+    showBanner();
+  });
+
+  // Manejar el clic en nuestro botón
+  if (installButton) {
+    installButton.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        // Disparar el prompt nativo
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          console.log('PWA instalada con éxito');
+        }
+        deferredPrompt = null;
+        hideBanner();
+      } else if (isIos() && !isStandalone()) {
+        alert('Para instalar en iPhone/iPad:\n1. Toca el ícono "Compartir" en la barra inferior.\n2. Selecciona "Añadir a la pantalla de inicio".');
+      } else if (isMacSafari() && !isStandalone()) {
+        alert('Para instalar como app nativa en tu Mac:\n1. Ve al menú superior y haz clic en "Archivo" (File).\n2. Selecciona "Añadir al Dock..." (Add to Dock...).');
+      } else {
+        alert('Para instalar esta app:\nBusca la opción "Añadir a pantalla de inicio" o "Instalar Aplicación" en el menú de tu navegador.');
+      }
+    });
+  }
+
+  // Mostrar banner automáticamente en navegadores de Apple que no lo disparan
+  window.addEventListener('DOMContentLoaded', () => {
+    if ((isIos() || isMacSafari()) && !isStandalone()) {
+      setTimeout(showBanner, 3000); // 3 segundos de delay para no interrumpir el inicio
+    }
+  });
+
+  window.addEventListener('appinstalled', () => {
+    hideBanner();
+  });
+</script>

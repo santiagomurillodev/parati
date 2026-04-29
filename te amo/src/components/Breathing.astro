@@ -1,0 +1,76 @@
+---
+---
+<div id="breathing-card" class="bg-white/60 backdrop-blur-[10px] rounded-organic p-8 shadow-sm border border-white/40 flex flex-col items-center relative overflow-hidden cursor-pointer active:scale-[0.98] transition-transform">
+  <h3 class="text-xs font-bold text-gray-800 mb-6 flex items-center gap-2 uppercase tracking-widest w-full">
+    <span>☁️</span> Respiración 4-7-8
+  </h3>
+  
+  <div class="relative w-48 h-48 flex items-center justify-center mb-8">
+    <!-- Breathing Circle -->
+    <div id="breathing-circle" class="absolute w-20 h-20 bg-pink-300/80 rounded-full transition-transform ease-linear duration-1000 transform scale-100 shadow-lg shadow-pink-300/40"></div>
+    <!-- Inner Core -->
+    <div class="absolute w-10 h-10 bg-pink-100 rounded-full shadow-inner z-0"></div>
+  </div>
+
+  <!-- Instruction Text Below Circle -->
+  <div id="breathing-text" class="text-pink-400 font-medium text-xs tracking-widest uppercase h-6">
+    Toca para iniciar
+  </div>
+</div>
+
+<script>
+  let breathingTimer;
+  let isBreathing = false;
+  
+  const card = document.getElementById('breathing-card');
+  const circle = document.getElementById('breathing-circle');
+  const text = document.getElementById('breathing-text');
+
+  function startCycle() {
+    if(!isBreathing || !circle || !text) return;
+    
+    // Phase 1: Inhala 4s
+    text.textContent = 'Inhala...';
+    circle.style.transitionDuration = '4000ms';
+    circle.style.transform = 'scale(2.2)';
+    
+    breathingTimer = setTimeout(() => {
+      if(!isBreathing) return;
+      // Phase 2: Sostén 7s
+      text.textContent = 'Sostén...';
+      circle.style.transitionDuration = '7000ms';
+      // Mantiene el tamaño (Añadimos un micro cambio para forzar la animación suave)
+      circle.style.transform = 'scale(2.25)';
+      
+      breathingTimer = setTimeout(() => {
+        if(!isBreathing) return;
+        // Phase 3: Exhala 8s
+        text.textContent = 'Exhala...';
+        circle.style.transitionDuration = '8000ms';
+        circle.style.transform = 'scale(1)';
+        
+        breathingTimer = setTimeout(() => {
+          if(!isBreathing) return;
+          startCycle(); // Bucle infinito hasta que se detenga
+        }, 8000);
+      }, 7000);
+    }, 4000);
+  }
+
+  if (card && circle && text) {
+    card.addEventListener('click', () => {
+      if (isBreathing) {
+        // Detener
+        isBreathing = false;
+        if (breathingTimer) clearTimeout(breathingTimer);
+        text.textContent = 'Toca para iniciar';
+        circle.style.transitionDuration = '1000ms';
+        circle.style.transform = 'scale(1)';
+      } else {
+        // Iniciar
+        isBreathing = true;
+        startCycle();
+      }
+    });
+  }
+</script>

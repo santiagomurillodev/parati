@@ -1,0 +1,115 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Breathing from '../components/Breathing.astro';
+import PanicModal from '../components/PanicModal.astro';
+import CompassionAI from '../components/CompassionAI.astro';
+import TarroDeVictorias from '../components/TarroDeVictorias.astro';
+import DailyVerse from '../components/DailyVerse.astro';
+import BibleGuidance from '../components/BibleGuidance.astro';
+import AmbientSound from '../components/AmbientSound.astro';
+---
+
+<Layout title="Te Amo">
+  <Navbar />
+  
+  <main class="px-6 pb-12 pt-4 flex-1 flex flex-col gap-6 relative z-10">
+    <!-- Main Card Glassmorphism -->
+    <div class="bg-white/60 backdrop-blur-[10px] rounded-organic p-6 shadow-sm border border-white/40">
+      <h3 class="text-xs font-bold text-gray-800 mb-4 flex items-center gap-2 uppercase tracking-widest">
+        <span>💡</span> Dato curioso
+      </h3>
+      
+      <!-- Cargando Dato Curioso -->
+      <div id="fun-fact-loading" class="animate-pulse flex flex-col gap-2 mt-2">
+        <div class="h-3 bg-gray-300/40 rounded w-full"></div>
+        <div class="h-3 bg-gray-300/40 rounded w-4/5"></div>
+      </div>
+      
+      <!-- Texto del Dato Curioso -->
+      <p id="fun-fact-text" class="text-gray-600 leading-relaxed font-light hidden text-sm italic">
+      </p>
+    </div>
+
+    <!-- Versículo del Día -->
+    <DailyVerse />
+
+    <!-- Guía Bíblica Basada en Sentimientos -->
+    <BibleGuidance />
+
+    <!-- Tarro de Victorias Integrado con Lista Diaria -->
+    <TarroDeVictorias />
+
+    <!-- Ejercicio de Respiración -->
+    <Breathing />
+
+    <!-- AI Compassion & Escape -->
+    <CompassionAI />
+    
+    <!-- Sonido Ambiente Sutil -->
+    <AmbientSound />
+
+    <!-- Action Button: Llamar a mi lugar seguro -->
+    <div class="mt-auto pt-2 pb-4">
+      <a href="tel:3322750920" class="w-full py-4 bg-gray-800 text-white rounded-[2rem] font-medium shadow-xl shadow-gray-800/20 active:scale-[0.98] transition-transform flex items-center justify-center gap-3 hover:bg-gray-700">
+        <span class="text-xl">🧸</span>
+        <span class="tracking-wide">Llamar a mi lugar seguro</span>
+      </a>
+      <p class="text-center text-[10px] text-gray-400 mt-4 font-bold tracking-widest uppercase">Siempre estoy y estaré para ti mi vida</p>
+    </div>
+  </main>
+  
+  <PanicModal />
+</Layout>
+
+<script>
+  (async function loadFunFact() {
+    const textEl = document.getElementById('fun-fact-text');
+    const loading = document.getElementById('fun-fact-loading');
+    const now = Date.now();
+    
+    const localFacts = [
+      "¿Sabías que las nutrias se agarran de la mano al dormir para no separarse flotando?",
+      "¿Sabías que los pingüinos le regalan una piedrita perfecta a su pareja para 'casarse'?",
+      "¿Sabías que las vacas tienen mejores amigas y se estresan si las separan?",
+      "¿Sabías que los caballitos de mar viajan agarrados de la cola?",
+      "¿Sabías que las abejas pueden comunicarse bailando?",
+      "¿Sabías que el corazón de una ballena azul es tan grande que un humano podría nadar por sus arterias?",
+      "¿Sabías que los elefantes son de los pocos animales que tienen rituales para despedir a sus seres queridos?",
+      "¿Sabías que las jirafas solo duermen unos 20 minutos al día?",
+      "¿Sabías que los gatos nos parpadean lento para decirnos que nos aman?",
+      "¿Sabías que las mariposas saborean con las patas?",
+      "¿Sabías que los pulpos tienen tres corazones y sangre azul?",
+      "¿Sabías que los conejos hacen un baile llamado 'binky' cuando están muy felices?",
+      "¿Sabías que los delfines tienen nombres propios para llamarse entre ellos?",
+      "¿Sabías que el aroma de las flores es más intenso cuando va a llover?",
+      "¿Sabías que los caballitos de mar machos son los que llevan a los bebés en su pancita?"
+    ];
+
+    try {
+      // Intentamos usar la IA para tener variedad infinita
+      const res = await fetch('/api/ai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'fun_fact', text: `Semilla: ${now}` })
+      });
+      const data = await res.json();
+      
+      if (data && data.success && data.data && textEl && loading) {
+        textEl.textContent = data.data;
+        loading.classList.add('hidden');
+        textEl.classList.remove('hidden');
+      } else {
+        throw new Error("Cuota agotada");
+      }
+    } catch(e) {
+      // Si la IA falla, usamos nuestra librería local (¡Siempre será nuevo para ella!)
+      if (textEl && loading) {
+        const randomFact = localFacts[Math.floor(Math.random() * localFacts.length)];
+        textEl.textContent = randomFact;
+        loading.classList.add('hidden');
+        textEl.classList.remove('hidden');
+      }
+    }
+  })();
+</script>

@@ -1,0 +1,50 @@
+---
+interface Props {
+	title: string;
+}
+
+const { title } = Astro.props;
+import InstallPWA from '../components/InstallPWA.astro';
+---
+
+<!doctype html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content="Una aplicación minimalista" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<meta name="theme-color" content="#FFE4E1" />
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Outfit:wght@500;700&display=swap" rel="stylesheet">
+		<title>{title}</title>
+		<style>
+			body {
+				margin: 0;
+				width: 100%;
+				min-height: 100vh;
+				font-family: 'Inter', sans-serif;
+				background: linear-gradient(135deg, #FFE4E1 0%, #F8C8DC 100%);
+				background-attachment: fixed;
+				-webkit-tap-highlight-color: transparent;
+				overscroll-behavior-y: none; /* Evita el rebote de Safari */
+			}
+
+			h1, h2, h3, .font-serif {
+				font-family: 'Outfit', sans-serif;
+			}
+
+			.rounded-organic {
+				border-radius: 2rem;
+			}
+		</style>
+	</head>
+	<body class="min-h-screen text-gray-800 font-sans selection:bg-pink-200 antialiased m-0 p-0">
+		<div class="mx-auto max-w-md w-full min-h-screen relative shadow-2xl shadow-pink-100/50 overflow-hidden flex flex-col" style="background: transparent;">
+			<slot />
+			<InstallPWA />
+		</div>
+	</body>
+</html>

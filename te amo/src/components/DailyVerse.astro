@@ -1,0 +1,91 @@
+---
+---
+
+<div class="bg-white/60 backdrop-blur-[10px] rounded-[2rem] p-6 shadow-sm border border-white/40 flex flex-col relative overflow-hidden min-h-[140px]">
+  
+  <h3 class="text-xs font-bold text-gray-800 mb-4 flex items-center gap-2 uppercase tracking-widest">
+    <span>🕊️</span> Promesa de Hoy (NVI)
+  </h3>
+  
+  <!-- Estado de Carga Sutil -->
+  <div id="verse-loading" class="flex flex-col gap-3 animate-pulse mt-1">
+    <div class="h-3 bg-gray-300/40 rounded w-full"></div>
+    <div class="h-3 bg-gray-300/40 rounded w-5/6"></div>
+    <div class="h-3 bg-gray-300/40 rounded w-4/6 mb-2"></div>
+    <div class="h-2 bg-gray-300/40 rounded w-1/4 self-end"></div>
+  </div>
+
+  <!-- Contenedor del Versículo -->
+  <div id="verse-content" class="hidden flex-col">
+    <p id="verse-text" class="text-gray-700 font-serif text-[17px] leading-relaxed italic mb-4 relative z-10">
+    </p>
+    <p id="verse-ref" class="text-right text-sm font-semibold text-pink-500 relative z-10">
+    </p>
+  </div>
+
+</div>
+
+<script>
+  (async function loadVerse() {
+    const textEl = document.getElementById('verse-text');
+    const refEl = document.getElementById('verse-ref');
+    const loading = document.getElementById('verse-loading');
+    const content = document.getElementById('verse-content');
+    
+    // Obtener la fecha de hoy
+    const todayStr = new Date().toLocaleDateString('en-CA');
+    const saved = localStorage.getItem('daily_verse');
+    
+    // 1. Revisar si ya cargamos el versículo de hoy (para no gastar API si recarga la página)
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed.date === todayStr) {
+          showVerse(`"${parsed.text}"`, parsed.ref);
+          return;
+        }
+      } catch(e) {}
+    }
+
+    // 2. Si es un nuevo día, pedir un versículo fresco a la IA
+    try {
+      const res = await fetch('/api/ai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'get_verse' })
+      });
+      const data = await res.json();
+      
+      if (data.success) {
+        // La IA nos devuelve: "Texto" \n "Referencia"
+        const parts = data.data.split('\n').filter(p => p.trim() !== '');
+        const ref = parts.pop() || "La Biblia";
+        const text = parts.join(' ').replace(/"/g, ''); 
+        
+        showVerse(`"${text}"`, ref);
+        
+        // Guardar en el almacenamiento local para que se mantenga fijo todo el día
+        localStorage.setItem('daily_verse', JSON.stringify({ date: todayStr, text, ref }));
+      } else {
+        throw new Error("Falló IA");
+      }
+    } catch(e) {
+      // Fallback hermoso si no hay internet
+      showVerse('"Porque yo sé muy bien los planes que tengo para ustedes —afirma el Señor—, planes de bienestar y no de calamidad, a fin de darles un futuro y una esperanza."', 'Jeremías 29:11 (NVI)');
+    }
+
+    function showVerse(t: string, r: string) {
+      if (textEl && refEl && loading && content) {
+        textEl.textContent = t;
+        // Limpiamos formatos extraños en la referencia
+        let cleanRef = r.replace(/^-/, '').replace(/\*/g, '').trim();
+        refEl.textContent = `- ${cleanRef}`;
+        
+        loading.classList.add('hidden');
+        loading.classList.remove('flex');
+        content.classList.remove('hidden');
+        content.classList.add('flex');
+      }
+    }
+  })();
+</script>

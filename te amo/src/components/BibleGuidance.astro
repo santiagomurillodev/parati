@@ -1,0 +1,110 @@
+---
+---
+<div class="bg-white/60 backdrop-blur-[10px] rounded-organic p-6 shadow-sm border border-white/40 flex flex-col relative overflow-hidden transition-all duration-500">
+  
+  <h3 class="text-xs font-bold text-gray-800 mb-4 flex items-center gap-2 uppercase tracking-widest">
+    <span>📖</span> Guía Bíblica
+  </h3>
+  <p class="text-gray-500 text-sm mb-4">¿Cómo se siente tu corazón hoy? Cuéntamelo y busquemos guía en Su palabra.</p>
+
+  <div class="relative">
+    <textarea 
+      id="bible-input" 
+      rows="3" 
+      class="w-full bg-white/40 border border-pink-100 rounded-2xl p-4 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-200 transition-all resize-none"
+      placeholder="Escribe aquí... (ej: Me siento cansada, tengo miedo, estoy feliz...)"
+    ></textarea>
+    
+    <button 
+      id="btn-get-guidance" 
+      class="mt-4 w-full py-3.5 bg-gray-800 text-white rounded-2xl font-semibold text-sm hover:bg-gray-700 transition-all active:scale-[0.98] shadow-lg shadow-gray-800/20 flex items-center justify-center gap-2"
+    >
+      Buscar consuelo
+    </button>
+  </div>
+
+  <!-- Resultado -->
+  <div id="bible-response" class="mt-6 hidden flex-col animate-in fade-in slide-in-from-top-4 duration-500">
+    <div class="w-full h-px bg-gradient-to-r from-transparent via-pink-100 to-transparent mb-6"></div>
+    
+    <div id="bible-loading" class="hidden flex-col items-center py-4">
+      <div class="w-6 h-6 border-2 border-pink-200 border-t-pink-500 rounded-full animate-spin mb-3"></div>
+      <p class="text-[10px] text-pink-400 uppercase tracking-widest font-bold">Escuchando con el corazón...</p>
+    </div>
+
+    <div id="bible-result" class="hidden bg-indigo-50/50 border border-indigo-100 p-5 rounded-2xl text-gray-700 text-[14px] leading-relaxed italic shadow-inner">
+    </div>
+  </div>
+</div>
+
+<script>
+  const input = document.getElementById('bible-input') as HTMLTextAreaElement;
+  const btn = document.getElementById('btn-get-guidance');
+  const responseArea = document.getElementById('bible-response');
+  const loading = document.getElementById('bible-loading');
+  const result = document.getElementById('bible-result');
+
+  async function getBibleGuidance() {
+    if (!input || !btn || !responseArea || !loading || !result) return;
+    
+    const text = input.value.trim();
+    if (!text) {
+      input.classList.add('border-red-200');
+      setTimeout(() => input.classList.remove('border-red-200'), 2000);
+      return;
+    }
+
+    // 1. Revisar caché para ahorrar cuota
+    const cacheKey = `bible_cache_${text.toLowerCase().replace(/\s+/g, '_').substring(0, 20)}`;
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+      result.textContent = cached;
+      responseArea.classList.remove('hidden');
+      result.classList.remove('hidden');
+      return;
+    }
+
+    // UI State
+    responseArea.classList.remove('hidden');
+    loading.classList.remove('hidden');
+    loading.classList.add('flex');
+    result.classList.add('hidden');
+    btn.disabled = true;
+    btn.classList.add('opacity-50');
+
+    try {
+      const res = await fetch('/api/ai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'bible_guidance', text })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        result.textContent = data.data;
+        // Guardar en caché por 24 horas
+        localStorage.setItem(cacheKey, data.data);
+        // Registrar métrica para el admin (anónima)
+        try {
+          const history = JSON.parse(localStorage.getItem('user_metrics') || '[]');
+          history.push({ action: 'bible_guidance', timestamp: Date.now() });
+          localStorage.setItem('user_metrics', JSON.stringify(history));
+        } catch(e) {}
+      } else {
+        result.textContent = "Lo siento mi amor, no pude conectar ahora. Pero recuerda que Él siempre está cerca de ti, sin importar nada.";
+      }
+    } catch (e) {
+      result.textContent = "Hubo un pequeño error, pero Su amor por ti sigue siendo perfecto. Inténtalo de nuevo en un ratito.";
+    } finally {
+      loading.classList.add('hidden');
+      loading.classList.remove('flex');
+      result.classList.remove('hidden');
+      btn.disabled = false;
+      btn.classList.remove('opacity-50');
+    }
+  }
+
+  if (btn) {
+    btn.addEventListener('click', getBibleGuidance);
+  }
+</script>

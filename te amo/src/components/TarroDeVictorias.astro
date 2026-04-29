@@ -1,0 +1,255 @@
+---
+---
+<div class="bg-white/60 backdrop-blur-[10px] rounded-organic p-6 shadow-sm border border-white/40 flex flex-col relative overflow-hidden">
+  
+  <h3 class="text-xs font-bold text-gray-800 mb-2 flex items-center gap-2 uppercase tracking-widest">
+    <span>✨</span> Pequeñas Victorias
+  </h3>
+  <p class="text-gray-500 text-sm mb-6">Cada paso cuenta. Llena tu tarro de luz hoy.</p>
+
+  <div class="flex flex-col gap-6 items-center">
+    
+    <!-- El Tarro Visual (Con forma real de frasco) -->
+    <div id="jar-container" class="relative flex flex-col items-center cursor-pointer hover:scale-105 transition-transform group mt-2">
+      
+      <!-- Tapa del tarro -->
+      <div class="w-20 h-5 bg-gradient-to-r from-pink-200 via-white to-pink-200 rounded-t-lg border border-white/60 shadow-sm z-20"></div>
+      
+      <!-- Anillo del cuello -->
+      <div class="w-24 h-2.5 bg-gradient-to-r from-pink-300 via-pink-100 to-pink-300 rounded-full shadow-md z-30 border border-white/50 -mt-1"></div>
+      
+      <!-- Cuello de cristal -->
+      <div class="w-16 h-3 bg-white/20 backdrop-blur-md border-l border-r border-white/70 z-10"></div>
+      
+      <!-- Cuerpo del Tarro (ancho y curvo) -->
+      <div class="relative w-36 h-36 bg-white/20 backdrop-blur-md rounded-b-[2.5rem] rounded-t-[2rem] border border-white/70 shadow-[inset_0_-10px_20px_rgba(255,255,255,0.4)] overflow-hidden flex items-end justify-center z-10 -mt-2">
+        
+        <!-- Contenedor de luciérnagas -->
+        <div id="fireflies-container" class="absolute inset-2 bottom-4 pointer-events-none">
+          <!-- Generadas por JS -->
+        </div>
+        
+        <!-- Reflejo Glass del cuerpo -->
+        <div class="absolute top-4 left-3 w-4 h-20 bg-white/50 rounded-full blur-[2px] transform -rotate-12"></div>
+        
+        <!-- Hint de texto -->
+        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-white/10 backdrop-blur-[1px] z-50">
+          <p class="text-[10px] font-bold text-gray-700 tracking-widest uppercase bg-white/80 px-3 py-1.5 rounded-full shadow-sm">Tócame</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lista de 3 Tareas Diarias -->
+    <div class="w-full space-y-3 mt-4" id="daily-tasks-list">
+      
+      <label class="task-item flex items-center gap-4 p-3.5 bg-white/50 rounded-2xl border border-white/60 cursor-pointer transition-all hover:bg-white/80 group">
+        <input type="checkbox" class="task-checkbox peer hidden" data-id="task-water" />
+        <div class="w-6 h-6 shrink-0 rounded-full border-2 border-pink-300 flex items-center justify-center peer-checked:bg-pink-400 peer-checked:border-pink-400 transition-colors shadow-inner group-hover:border-pink-400">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white opacity-0 peer-checked:opacity-100 transition-opacity" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <span class="text-[15px] font-medium text-gray-700 peer-checked:text-gray-400 peer-checked:line-through transition-all select-none">💧 Tomé agua hoy</span>
+      </label>
+
+      <label class="task-item flex items-center gap-4 p-3.5 bg-white/50 rounded-2xl border border-white/60 cursor-pointer transition-all hover:bg-white/80 group">
+        <input type="checkbox" class="task-checkbox peer hidden" data-id="task-god" />
+        <div class="w-6 h-6 shrink-0 rounded-full border-2 border-indigo-300 flex items-center justify-center peer-checked:bg-indigo-400 peer-checked:border-indigo-400 transition-colors shadow-inner group-hover:border-indigo-400">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white opacity-0 peer-checked:opacity-100 transition-opacity" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <span class="text-[15px] font-medium text-gray-700 peer-checked:text-gray-400 peer-checked:line-through transition-all select-none">🙏 Tuve tiempo con Dios</span>
+      </label>
+
+      <label class="task-item flex items-center gap-4 p-3.5 bg-white/50 rounded-2xl border border-white/60 cursor-pointer transition-all hover:bg-white/80 group">
+        <input type="checkbox" class="task-checkbox peer hidden" data-id="task-gratitude" />
+        <div class="w-6 h-6 shrink-0 rounded-full border-2 border-rose-300 flex items-center justify-center peer-checked:bg-rose-400 peer-checked:border-rose-400 transition-colors shadow-inner group-hover:border-rose-400">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white opacity-0 peer-checked:opacity-100 transition-opacity" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <span class="text-[15px] font-medium text-gray-700 peer-checked:text-gray-400 peer-checked:line-through transition-all select-none">🤍 Agradecí por un nuevo día</span>
+      </label>
+
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Mensaje de Amor -->
+<div id="love-modal" class="fixed inset-0 z-50 flex items-center justify-center px-6 hidden opacity-0 transition-opacity duration-500">
+  <div class="absolute inset-0 bg-white/40 backdrop-blur-md" id="love-modal-backdrop"></div>
+  
+  <div class="relative bg-white/80 backdrop-blur-xl border border-pink-100 p-8 rounded-[2.5rem] shadow-2xl max-w-sm w-full text-center transform scale-95 transition-transform duration-500" id="love-modal-content">
+    
+    <!-- Corazón Animado Central -->
+    <div class="relative w-20 h-20 bg-pink-50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+      <div class="absolute inset-0 bg-pink-200 rounded-full animate-ping opacity-30"></div>
+      <span class="text-3xl relative z-10 animate-bounce" style="animation-duration: 2s;">💖</span>
+    </div>
+    
+    <h3 class="text-gray-800 font-serif text-2xl mb-6 italic leading-relaxed px-2">
+      "Lo estás haciendo bien mi amor, confía en ti eres la mejor, te amo"
+    </h3>
+    
+    <button id="btn-close-love-modal" class="w-full bg-gray-800 text-white px-6 py-3.5 rounded-full text-sm font-semibold hover:bg-gray-700 transition-transform active:scale-95 shadow-lg shadow-gray-800/20 tracking-wider uppercase">
+      Gracias
+    </button>
+  </div>
+</div>
+
+<style is:global>
+  .firefly {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: #fde047; /* yellow-300 */
+    border-radius: 50%;
+    box-shadow: 0 0 15px 5px rgba(253, 224, 71, 0.6);
+    animation: float 4s ease-in-out infinite alternate, glow 2s ease-in-out infinite alternate;
+  }
+
+  @keyframes float {
+    0% { transform: translateY(0px) translateX(0px); }
+    50% { transform: translateY(-20px) translateX(15px); }
+    100% { transform: translateY(15px) translateX(-15px); }
+  }
+
+  @keyframes glow {
+    0% { opacity: 0.6; box-shadow: 0 0 10px 2px rgba(253, 224, 71, 0.4); }
+    100% { opacity: 1; box-shadow: 0 0 25px 8px rgba(253, 224, 71, 0.8); }
+  }
+</style>
+
+<script>
+  (function initVictorias() {
+    const checkboxes = document.querySelectorAll('.task-checkbox') as NodeListOf<HTMLInputElement>;
+    const firefliesContainer = document.getElementById('fireflies-container');
+    const jarContainer = document.getElementById('jar-container');
+    const loveModal = document.getElementById('love-modal');
+    const loveBackdrop = document.getElementById('love-modal-backdrop');
+    const btnCloseLoveModal = document.getElementById('btn-close-love-modal');
+    const loveModalContent = document.getElementById('love-modal-content');
+
+    // Obtener la fecha de hoy en formato YYYY-MM-DD local
+    const todayStr = new Date().toLocaleDateString('en-CA'); // 'YYYY-MM-DD' de forma confiable
+    
+    // Cargar estado
+    function loadState() {
+      const savedDataStr = localStorage.getItem('daily_habits');
+      let savedData = { date: todayStr, tasks: {} as Record<string, boolean> };
+      
+      if (savedDataStr) {
+        try {
+          const parsed = JSON.parse(savedDataStr);
+          if (parsed.date === todayStr) {
+            savedData = parsed;
+          } else {
+            // Es un nuevo día, resetear guardando un objeto vacío con la nueva fecha
+            localStorage.setItem('daily_habits', JSON.stringify({ date: todayStr, tasks: {} }));
+          }
+        } catch(e) {}
+      }
+
+      checkboxes.forEach(cb => {
+        const id = cb.getAttribute('data-id');
+        if (id && savedData.tasks[id]) {
+          cb.checked = true;
+          cb.disabled = true; // No se puede desmarcar!
+          cb.parentElement?.classList.add('opacity-60', 'pointer-events-none');
+          createFirefly(true); // Aparecer sin transición para que se vea normal al recargar
+        }
+      });
+    }
+
+    // Guardar estado
+    function saveState() {
+      const state = {
+        date: todayStr,
+        tasks: {} as Record<string, boolean>
+      };
+      checkboxes.forEach(cb => {
+        const id = cb.getAttribute('data-id');
+        if (id && cb.checked) {
+          state.tasks[id] = true;
+        }
+      });
+      
+      localStorage.setItem('daily_habits', JSON.stringify(state));
+      
+      // Guardar también en el registro de admin para el reporte táctico (opcional)
+      let victories = [];
+      try { victories = JSON.parse(localStorage.getItem('victories_history') || '[]'); } catch(e){}
+      victories.push({ text: "Hábito completado", date: new Date().toISOString() });
+      localStorage.setItem('victories_history', JSON.stringify(victories));
+    }
+
+    function createFirefly(instant = false) {
+      if(!firefliesContainer) return;
+      const f = document.createElement('div');
+      f.className = 'firefly';
+      
+      // Posición aleatoria dentro del tarro visual
+      const top = 15 + Math.random() * 60; // 15% a 75%
+      const left = 15 + Math.random() * 70; // 15% a 85%
+      f.style.top = `${top}%`;
+      f.style.left = `${left}%`;
+      
+      // Delay aleatorio para desincronizar el brillo y flotación
+      f.style.animationDelay = `-${Math.random() * 5}s`;
+      
+      if (!instant) {
+        // Animación suave si la acabas de crear
+        f.style.transform = 'scale(0)';
+        f.style.opacity = '0';
+        f.style.transition = 'all 1s cubic-bezier(0.34, 1.56, 0.64, 1)';
+        firefliesContainer.appendChild(f);
+        
+        // Forzar renderizado
+        f.offsetHeight;
+        
+        f.style.transform = 'scale(1)';
+        f.style.opacity = '1';
+      } else {
+        firefliesContainer.appendChild(f);
+      }
+    }
+
+    // Escuchar cuando el usuario marca una tarea
+    checkboxes.forEach(cb => {
+      cb.addEventListener('change', () => {
+        if (cb.checked) {
+          // Deshabilitar PERMANENTEMENTE para esta sesión
+          cb.disabled = true;
+          cb.parentElement?.classList.add('opacity-60', 'pointer-events-none');
+          
+          createFirefly(false);
+          saveState();
+        }
+      });
+    });
+
+    // Lógica del Modal de Amor
+    function openModal() {
+      if(!loveModal || !loveModalContent) return;
+      loveModal.classList.remove('hidden');
+      loveModal.offsetHeight; // Forzar reflow
+      loveModal.classList.remove('opacity-0');
+      loveModalContent.classList.remove('scale-95');
+    }
+
+    function closeModal() {
+      if(!loveModal || !loveModalContent) return;
+      loveModal.classList.add('opacity-0');
+      loveModalContent.classList.add('scale-95');
+      setTimeout(() => loveModal.classList.add('hidden'), 500);
+    }
+
+    if(jarContainer) jarContainer.addEventListener('click', openModal);
+    if(loveBackdrop) loveBackdrop.addEventListener('click', closeModal);
+    if(btnCloseLoveModal) btnCloseLoveModal.addEventListener('click', closeModal);
+
+    // Inicializar
+    loadState();
+  })();
+</script>

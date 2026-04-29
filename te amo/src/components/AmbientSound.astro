@@ -1,0 +1,47 @@
+<div id="youtube-player" class="hidden"></div>
+
+<script>
+  // Cargar la API de YouTube
+  var tag = document.createElement('script');
+  tag.src = "https://www.youtube.com/iframe_api";
+  var firstScriptTag = document.getElementsByTagName('script')[0];
+  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+  let player;
+  let started = false;
+
+  window.onYouTubeIframeAPIReady = function() {
+    player = new YT.Player('youtube-player', {
+      height: '0',
+      width: '0',
+      videoId: 'yJ6Lbsmb1lY',
+      playerVars: {
+        'autoplay': 0,
+        'loop': 1,
+        'playlist': 'yJ6Lbsmb1lY'
+      },
+      events: {
+        'onReady': onPlayerReady
+      }
+    });
+  };
+
+  function onPlayerReady(event) {
+    player.setVolume(20); // Volumen sutil
+    
+    // Iniciar en un punto aleatorio (el video dura 10 horas = 36000 segundos)
+    const randomStartTime = Math.floor(Math.random() * 36000);
+    player.seekTo(randomStartTime, true);
+    
+    const startAudio = () => {
+      if (!started && player) {
+        player.playVideo();
+        started = true;
+      }
+    };
+
+    document.addEventListener('click', startAudio, { once: true });
+    document.addEventListener('touchstart', startAudio, { once: true });
+    document.addEventListener('scroll', startAudio, { once: true });
+  }
+</script>
